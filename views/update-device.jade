@@ -1,0 +1,38 @@
+extend layout
+block content
+  div
+    | Please enter details
+    div
+      form(id='update-device' action='#{urlForm}' method='post')
+        input(type="hidden" name="token" value=token )
+        label.input-form
+          |Device ID
+          input(type="text" name="device_id" value="#{device.id}" )
+        label.input-form
+          |Device Name
+          input(type="text" name="device_description" value="#{device.description}")
+        label.input-form
+          |Device Connector
+          select(id="deviceconn" name="device_connector_id" )
+            if connectors
+              each connector, index in connectors
+                option(value= connector._id, selected=device.connector[0] == connector._id.toString()  ) #{connector.name}
+        label.input-form
+            |Device Category
+            select(id="devicecateg" name="device_category_id" )
+              if categories
+                each category, index in categories
+                  option(value= category._id, selected=device.category[0] == category._id.toString()  ) #{category.name}
+        fieldset(class="fieldset")
+          legend
+            |Attributes
+          label.input-form
+              |Latitude
+              input(type="text" name="device_geo_latitude"  value="#{device.attributes.latitude || ''}")
+          label.input-form
+              |Longitude
+              input(type="text" name="device_geo_longitude" value="#{device.attributes.longitude || ''}")
+        button(id="add-device" onclick='something()' class="button") Update Device
+block sidebar
+  .widget
+    p

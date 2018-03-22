@@ -1,0 +1,20 @@
+extend layout
+block content
+  div
+    | Please enter category details
+    div
+      form(id='add-category' action='#{urlForm}' method='post')
+        input(type="hidden" name="token" value=token )
+        label.input-form
+          |Category Name
+          input(type="text" name="category_name" )
+        label.input-form
+            |Category Description
+            textarea(name="category_description" )
+        label.input-form
+            |Category Code
+            textarea(name="category_code")
+        button(id="add-category" onclick='something()' class="button") Add Category
+block sidebar
+  .widget
+    p

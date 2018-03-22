@@ -1,0 +1,22 @@
+body {
+  padding: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+.input-form{
+  width: 30%;
+}
+
+fieldset{
+  width: 30%;
+}
+fieldset .input-form{
+  width: 100%;
+}
+.sid
+.sidebar{
+  float: right;
+}

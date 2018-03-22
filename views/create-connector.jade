@@ -1,0 +1,20 @@
+extend layout
+block content
+  div
+    | Please enter connector details
+    div
+      form(id='add-connector' action='#{urlForm}' method='post')
+        input(type="hidden" name="token" value=token )
+        label.input-form
+          |Connector Name
+          input(type="text" name="connector_name" )
+        label.input-form
+            |Connector Description
+            textarea(name="connector_description" )
+        label.input-form
+            |Connector URL
+            input(type="text" name="connector_url" )
+        button(id="add-connector" onclick='something()' class="button") Add Connector
+block sidebar
+  .widget
+    p

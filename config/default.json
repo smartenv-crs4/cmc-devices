@@ -1,0 +1,25 @@
+{
+  "production": {
+    "dbHost":"127.0.0.1",
+    "dbPort":"27017",
+    "dbName":"CMCDEVICE",
+    "limit":50,
+    "skip":0,
+    "logfile":"/var/log/CMC-Devices-Microservice.log",
+      "enableCors":true,
+    "authUrl":"http://localhost:3005",
+    "auth_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoibXMiLCJpc3MiOiJub3QgdXNlZCBmbyBtcyIsImVtYWlsIjoibm90IHVzZWQgZm8gbXMiLCJ0eXBlIjoiY21jLWRldmljZXMiLCJlbmFibGVkIjp0cnVlLCJleHAiOjE4MzI3NTg5ODc4ODJ9.6Mn2z8JgTul6j7lRjeHXn7IDiitPnTnyYnMely0P0jQ",
+    "decodedTokenFieldName": "mailerms",
+    "connectorDomainUrl" : "http://localhost:1880",
+    "urlSupport": "http://localhost:3014/support/",
+    "templates": {
+      "template1": {
+        "subject":"test template",
+        "text":"template di prova {{body}}",
+        "html":"<h1>Template CMC Core</h1><p>{{body}}</p><p style='font:italic 9px;color:lightgrey;'>Esempio footer</p>",
+        "from":"your_from_email_address"
+      }
+    },
+    "restApiVersion": "0.1"
+  }
+}
