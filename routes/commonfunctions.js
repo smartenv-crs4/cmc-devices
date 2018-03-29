@@ -32,7 +32,7 @@ var request = require('request');
  *
   * @param  {http.ClientRequest} req an http request
   * @param  {http.ServerResponse} res an http rsponse
-  * @param  {function} next  invoke the next route handler
+  * @param  {requestCallback} next  invoke the next route handler
   * @return {http.ServerResponse} an http response
  */
 exports.createDevice = function(req, res, next) {
@@ -117,7 +117,7 @@ exports.getAllDevices = function(req, res) {
  *
   * @param  {http.ClientRequest} req an http request
   * @param  {http.ServerResponse} res an http rsponse
-  * @param  {function} next  invoke the next route handler
+  * @param  {requestCallback} next  invoke the next route handler
   * @return {http.ServerResponse} an http response
  */
 exports.getDevicebyID = function(req, res, next) {
@@ -150,7 +150,7 @@ exports.getDevicebyID = function(req, res, next) {
  *
   * @param  {http.ClientRequest} req an http request
   * @param  {http.ServerResponse} res an http rsponse
-  * @param  {function} next  invoke the next route handler
+  * @param  {requestCallback} next  invoke the next route handler
   * @return {http.ServerResponse} an http response
  */
 exports.getReadDevicebyID = function(req, res, next) {
@@ -215,7 +215,7 @@ exports.getReadDevicebyID = function(req, res, next) {
  *
   * @param  {http.ClientRequest} req an http request
   * @param  {http.ServerResponse} res an http rsponse
-  * @param  {function} next  invoke the next route handler
+  * @param  {requestCallback} next  invoke the next route handler
   * @return {http.ServerResponse} an http response
  */
  exports.updateDevice = function(req, res, next) {
@@ -434,7 +434,7 @@ exports.renderCreateCategory = function(req, res, restApiRoot) {
  *
   * @param  {http.ClientRequest} req an http request
   * @param  {http.ServerResponse} res an http rsponse
-  * @param  {function} next  invoke the next route handler
+  * @param  {requestCallback} next  invoke the next route handler
   * @return {http.ServerResponse} an http response
  */
 exports.createCategory = function(req, res, next) {
@@ -507,7 +507,7 @@ exports.renderCreateConnector = function(req, res, restApiRoot) {
  * createConnector - create a new device connector
    * @param  {http.ClientRequest} req an http request
    * @param  {http.ServerResponse} res an http rsponse
-   * @param  {Function} next  invoke the next route handler
+   * @param  {requestCallback} next  invoke the next route handler
    * @return {http.ServerResponse} an http response
   */
 exports.createConnector = function(req, res, next) {
@@ -584,7 +584,7 @@ exports.getAllConnectors = function(req, res) {
  *
  * @param  {http.ClientRequest} req an http request
  * @param  {http.ServerResponse} res an http rsponse
- * @param  {String} restApiRoot  a rest api url
+ * @param  {requestCallback} next  invoke the next route handler
  * @return {http.ServerResponse} an http response
  */
 exports.getConnectorByID = function(req, res, next) {
