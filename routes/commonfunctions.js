@@ -135,7 +135,7 @@ exports.getDevicebyID = function(req, res, next) {
     }
 
     if (device) {
-      return res.status(200).json(device.toJSON({virtuals: true}));
+      return res.status(201).json(device.toJSON({virtuals: true}));
     }
     res.status(404).send({
       "error": 404,
@@ -486,6 +486,44 @@ exports.createCategory = function(req, res, next) {
 };
 
 /**
+ * deleteCategory - delete a category from the system
+ *
+ * @param  {http.ClientRequest} req an http request
+ * @param  {http.ServerResponse} res an http rsponse
+ * @return {http.ServerResponse} an http responser
+ */
+exports.deleteCategory = function(req, res) {
+  if (!req.params.id) {
+    var message  = "No category to delete with id: " + req.params.id;
+    return res.status(404).json(
+      {
+      "error": 404,
+      "errorMessage": message,
+      "moreInfo": config.urlSupport + "404"
+      });
+
+  }
+  Category.remove({
+    _id: req.params.id
+  }, function(err, device) {
+    if (err) {
+      var message  = "Error deleting a category with id " + req.params.id;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+    res.status(201).send({
+      "message": "Success deleting a category with id " + req.params.id
+    });
+  });
+};
+
+
+
+/**
  * renderCreateConnector - render a view to create a new device category
  *
  * @param  {http.ClientRequest} req an http request
@@ -553,6 +591,42 @@ exports.createConnector = function(req, res, next) {
       res.status(201).send(connector.toJSON());
     });
 
+  });
+};
+
+/**
+ * deleteConnector - delete a category from the system
+ *
+ * @param  {http.ClientRequest} req an http request
+ * @param  {http.ServerResponse} res an http rsponse
+ * @return {http.ServerResponse} an http responser
+ */
+exports.deleteConnector = function(req, res) {
+  if (!req.params.id) {
+    var message  = "No connector to delete with id: " + req.params.id;
+    return res.status(404).json(
+      {
+      "error": 404,
+      "errorMessage": message,
+      "moreInfo": config.urlSupport + "404"
+      });
+
+  }
+  Connector.remove({
+    _id: req.params.id
+  }, function(err, device) {
+    if (err) {
+      var message  = "Error deleting a connector with id " + req.params.id;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+    res.status(201).send({
+      "message": "Success deleting a connector with id " + req.params.id
+    });
   });
 };
 

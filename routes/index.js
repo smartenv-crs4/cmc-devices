@@ -97,6 +97,9 @@ router.get( restApiRoot + '/categories', authWrap, commonFunction.getAllCategori
 //add a new category
 router.post(restApiRoot + '/categories', authWrap, commonFunction.createCategory);
 
+//remove a category
+router.delete(restApiRoot + '/categories/:id', authWrap, commonFunction.deleteCategory);
+
 // get all device connectors
 router.get( restApiRoot + '/connectors', authWrap, commonFunction.getAllConnectors);
 
@@ -106,5 +109,7 @@ router.get( restApiRoot + '/connectors/:id', authWrap, commonFunction.getConnect
 //add a new connector
 router.post(restApiRoot + '/connectors', authWrap, commonFunction.createConnector);
 
+//remove a connector
+router.delete(restApiRoot + '/connectors/:id', authWrap, commonFunction.deleteConnector);
 
 module.exports = router;
