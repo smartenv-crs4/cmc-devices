@@ -88,127 +88,6 @@ exports.createDevice = function(req, res, next) {
   });
 };
 
-/**
- * getAllDevices - Returns all devices
- *
-  * @param  {http.ClientRequest} req an http request
-  * @param  {http.ServerResponse} res an http rsponse
-  * @return {http.ServerResponse} an http response
- */
-exports.getAllDevices = function(req, res) {
-  // Retrieve and return all notes from the database.
-  Device.find(function(err, devices) {
-    if (err) {
-      var message = "Error finding all devices";
-      res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    } else {
-      res.status(201).send(devices);
-    }
-  });
-};
-
-/**
- * getDevicebyID - returns a device by id
- *
-  * @param  {http.ClientRequest} req an http request
-  * @param  {http.ServerResponse} res an http rsponse
-  * @param  {requestCallback} next  invoke the next route handler
-  * @return {http.ServerResponse} an http response
- */
-exports.getDevicebyID = function(req, res, next) {
-  var idDevice = (req.params.id).toString();
-
-  Device.findOne({id: idDevice}).populate({path: 'category', model: 'categories'}).populate({path: 'connector', model: 'connectors'}).exec(function(err, device) {
-    if (err) {
-      var message  = "Error finding a device with id: " + req.params.id;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-
-    if (device) {
-      return res.status(201).json(device.toJSON({virtuals: true}));
-    }
-    res.status(404).send({
-      "error": 404,
-      "errorMessage": "Could not find a device with id: " + req.params.id,
-      "moreInfo": domainUrl + "/v1/support/404"
-    });
-  });
-};
-
-/**
- * getReadDevicebyID - read a realtime device data from the middleware
- *
-  * @param  {http.ClientRequest} req an http request
-  * @param  {http.ServerResponse} res an http rsponse
-  * @param  {requestCallback} next  invoke the next route handler
-  * @return {http.ServerResponse} an http response
- */
-exports.getReadDevicebyID = function(req, res, next) {
-  var idDevice = (req.params.id).toString();
-
-  Device.findOne({id: idDevice}).populate({path: 'category', model: 'categories'}).populate({path: 'connector', model: 'connectors'}).exec(function(err, device) {
-    if (err) {
-      var message  = "Error finding a device with id: " + req.params.id;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-
-    if (device && device.connector.length) {
-      console.log("Endpoint of device:**** " + domainUrl + device.connector[0].url);
-      var endpoint = (device.connector[0].url).toString();
-      var endPointToCall = endpoint.replace(/:deviceid/g, idDevice);
-      var body = [];
-      request.get(config.connectorDomainUrl + endPointToCall).on('data', function(data) {
-        body.push(data);
-      }).on('end', function() {
-        console.log("URL PATH::"  + endPointToCall);
-        body = Buffer.concat(body).toString();
-        console.log(body);
-        try {
-          return res.status(201).json(JSON.parse(body));
-        } catch (e) {
-          console.error(e);
-          var message  = e.message;
-          return res.status(500).json(
-            {
-            "error": 500,
-            "errorMessage": message,
-            "moreInfo": config.urlSupport + "500"
-            });
-        }
-      }).on('error', function(err) {
-        res.status(404).send({
-          "error": 404,
-          "errorMessage": "Problem to retrieve device data from middleware " + req.params.id,
-          "moreInfo": config.urlSupport + "400"
-        });
-      })
-
-    } else {
-      var message  = "Error retrieving device data";
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-  });
-};
 
 /**
  * updateDevice - update a device data
@@ -296,6 +175,252 @@ exports.deleteDevice = function(req, res) {
   });
 };
 
+/**
+ * getDevicebyID - returns a device by id
+ *
+  * @param  {http.ClientRequest} req an http request
+  * @param  {http.ServerResponse} res an http rsponse
+  * @param  {requestCallback} next  invoke the next route handler
+  * @return {http.ServerResponse} an http response
+ */
+exports.getDevicebyID = function(req, res, next) {
+  var idDevice = (req.params.id).toString();
+
+  Device.findOne({id: idDevice}).populate({path: 'category', model: 'categories'}).populate({path: 'connector', model: 'connectors'}).exec(function(err, device) {
+    if (err) {
+      var message  = "Error finding a device with id: " + req.params.id;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+
+    if (device) {
+      return res.status(201).json(device.toJSON({virtuals: true}));
+    }
+    res.status(404).send({
+      "error": 404,
+      "errorMessage": "Could not find a device with id: " + req.params.id,
+      "moreInfo": domainUrl + "/v1/support/404"
+    });
+  });
+};
+
+/**
+ * getAllDevices - Returns all devices
+ *
+  * @param  {http.ClientRequest} req an http request
+  * @param  {http.ServerResponse} res an http rsponse
+  * @return {http.ServerResponse} an http response
+ */
+exports.getAllDevices = function(req, res) {
+  // Retrieve and return all notes from the database.
+  Device.find(function(err, devices) {
+    if (err) {
+      var message = "Error finding all devices";
+      res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    } else {
+      res.status(201).send(devices);
+    }
+  });
+};
+
+/**
+ * getReadDevicebyID - read a realtime device data from the middleware
+ *
+  * @param  {http.ClientRequest} req an http request
+  * @param  {http.ServerResponse} res an http rsponse
+  * @param  {requestCallback} next  invoke the next route handler
+  * @return {http.ServerResponse} an http response
+ */
+exports.getReadDevicebyID = function(req, res, next) {
+  var idDevice = (req.params.id).toString();
+
+  Device.findOne({id: idDevice}).populate({path: 'category', model: 'categories'}).populate({path: 'connector', model: 'connectors'}).exec(function(err, device) {
+    if (err) {
+      var message  = "Error finding a device with id: " + req.params.id;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+
+    if (device && device.connector.length) {
+      console.log("Endpoint of device:**** " + domainUrl + device.connector[0].url);
+      var endpoint = (device.connector[0].url).toString();
+      var endPointToCall = endpoint.replace(/:deviceid/g, idDevice);
+      var body = [];
+      request.get(config.connectorDomainUrl + endPointToCall).on('data', function(data) {
+        body.push(data);
+      }).on('end', function() {
+        console.log("URL PATH::"  + endPointToCall);
+        body = Buffer.concat(body).toString();
+        console.log(body);
+        try {
+          return res.status(201).json(JSON.parse(body));
+        } catch (e) {
+          console.error(e);
+          var message  = e.message;
+          return res.status(500).json(
+            {
+            "error": 500,
+            "errorMessage": message,
+            "moreInfo": config.urlSupport + "500"
+            });
+        }
+      }).on('error', function(err) {
+        res.status(404).send({
+          "error": 404,
+          "errorMessage": "Problem to retrieve device data from middleware " + req.params.id,
+          "moreInfo": config.urlSupport + "400"
+        });
+      })
+
+    } else {
+      var message  = "Error retrieving device data";
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+  });
+};
+
+/**
+ * createCategory - create a new device category
+ *
+  * @param  {http.ClientRequest} req an http request
+  * @param  {http.ServerResponse} res an http rsponse
+  * @param  {requestCallback} next  invoke the next route handler
+  * @return {http.ServerResponse} an http response
+ */
+exports.createCategory = function(req, res, next) {
+  //return res.status(200).send({data: {result: true, message: 'ok'}});
+  var message = 'Category Added Successfully',
+    id = null;
+
+  Category.findOne({
+    name: req.body.category_name
+  }, function(err, category) {
+    if (err) {
+      var message  = "Error finding an existing category";
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+    if (category) {
+      var message  = "Category already exist with name: " + category.name;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+
+    var category = new Category({name: req.body.category_name, description: req.body.category_description, code: req.body.category_code});
+    //console.log('Created document id: ' + req.body);
+
+    category.save(function(err) {
+      if (err) {
+        var message  = "Problems while saving category: " + category.name;
+        return res.status(500).json(
+          {
+          "error": 500,
+          "errorMessage": message,
+          "moreInfo": config.urlSupport + "500"
+          });
+      }
+
+      res.set('Location', '/categories/' + category.id);
+      res.status(201).send(category.toJSON());
+    });
+
+  });
+};
+
+/**
+ * deleteCategory - delete a category from the system
+ *
+ * @param  {http.ClientRequest} req an http request
+ * @param  {http.ServerResponse} res an http rsponse
+ * @return {http.ServerResponse} an http responser
+ */
+exports.deleteCategory = function(req, res) {
+  if (!req.params.id) {
+    var message  = "No category to delete with id: " + req.params.id;
+    return res.status(404).json(
+      {
+      "error": 404,
+      "errorMessage": message,
+      "moreInfo": config.urlSupport + "404"
+      });
+
+  }
+  Category.remove({
+    _id: req.params.id
+  }, function(err, device) {
+    if (err) {
+      var message  = "Error deleting a category with id " + req.params.id;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+    res.status(201).send({
+      "message": "Success deleting a category with id " + req.params.id
+    });
+  });
+};
+
+/**
+ * getCategoryById - returns a device by id
+ *
+  * @param  {http.ClientRequest} req an http request
+  * @param  {http.ServerResponse} res an http rsponse
+  * @param  {requestCallback} next  invoke the next route handler
+  * @return {http.ServerResponse} an http response
+ */
+exports.getCategoryById = function(req, res, next) {
+  var idCategory = (req.params.id).toString();
+
+  Category.findById(idCategory).exec(function(err, category) {
+    if (err) {
+      var message  = "Error finding a category with id: " + idCategory;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+
+    if (category) {
+      return res.status(201).json(category.toJSON({virtuals: true}));
+    }
+    res.status(404).send({
+      "error": 404,
+      "errorMessage": "Could not find a category with id: " + idCategory,
+      "moreInfo": domainUrl + "/v1/support/404"
+    });
+  });
+};
 
 /**
  * getAllCategories - retrieve all categories
@@ -319,6 +444,157 @@ exports.getAllCategories = function(req, res) {
 
     } else {
       res.status(201).send(categories);
+    }
+  });
+};
+
+
+/**
+ * createConnector - create a new device connector
+   * @param  {http.ClientRequest} req an http request
+   * @param  {http.ServerResponse} res an http rsponse
+   * @param  {requestCallback} next  invoke the next route handler
+   * @return {http.ServerResponse} an http response
+  */
+exports.createConnector = function(req, res, next) {
+  var message = 'Connector Added Successfully',
+    id = null;
+
+  Connector.findOne({
+    name: req.body.connector_name
+  }, function(err, connector) {
+    if (err) {
+      var message  = "Problems finding an existing connector: " + req.body.connector_name;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+    if (connector) {
+      var message  = "Connector already exist with name: " + connector.name;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+
+    var connector = new Connector({name: req.body.connector_name, description: req.body.connector_description, url: req.body.connector_url});
+
+    connector.save(function(err) {
+      if (err) {
+        var message  = "Problems while saving connector with name: " + connector.name;
+        return res.status(500).json(
+          {
+          "error": 500,
+          "errorMessage": message,
+          "moreInfo": config.urlSupport + "500"
+          });
+      }
+
+      res.set('Location', '/connector/' + connector.id);
+      res.status(201).send(connector.toJSON());
+    });
+
+  });
+};
+
+/**
+ * deleteConnector - delete a category from the system
+ *
+ * @param  {http.ClientRequest} req an http request
+ * @param  {http.ServerResponse} res an http rsponse
+ * @return {http.ServerResponse} an http responser
+ */
+exports.deleteConnector = function(req, res) {
+  if (!req.params.id) {
+    var message  = "No connector to delete with id: " + req.params.id;
+    return res.status(404).json(
+      {
+      "error": 404,
+      "errorMessage": message,
+      "moreInfo": config.urlSupport + "404"
+      });
+
+  }
+  Connector.remove({
+    _id: req.params.id
+  }, function(err, device) {
+    if (err) {
+      var message  = "Error deleting a connector with id " + req.params.id;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    }
+    res.status(201).send({
+      "message": "Success deleting a connector with id " + req.params.id
+    });
+  });
+};
+
+
+/**
+ * getConnectorByID - get a connectory by ID
+ *
+ * @param  {http.ClientRequest} req an http request
+ * @param  {http.ServerResponse} res an http rsponse
+ * @param  {requestCallback} next  invoke the next route handler
+ * @return {http.ServerResponse} an http response
+ */
+exports.getConnectorByID = function(req, res, next) {
+  var idConnector = (req.params.id).toString();
+
+  Connector.findById(idConnector).exec(function(err, connector) {
+    if (err) {
+      var message  = "Error finding a connector with id: " + idConnector;
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+
+    }
+
+    if (connector) {
+      return res.status(201).json(connector.toJSON({virtuals: true}));
+    }
+
+    var message  =  "Could not find a connector with id " + req.params.id;
+    return res.status(404).json(
+      {
+      "error": 404,
+      "errorMessage": message,
+      "moreInfo": config.urlSupport + "404"
+      });
+  });
+};
+
+/**
+ * getAllConnectors - retrieve all connectors
+   * @param  {http.ClientRequest} req an http request
+   * @param  {http.ServerResponse} res an http rsponse
+   * @return {http.ServerResponse} an http response
+  */
+exports.getAllConnectors = function(req, res) {
+  // Retrieve and return all notes from the database.
+  Connector.find(function(err, connectors) {
+    if (err) {
+      var message  = "Error finding all connectors";
+      return res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    } else {
+      res.status(201).send(connectors);
     }
   });
 };
@@ -429,99 +705,6 @@ exports.renderCreateCategory = function(req, res, restApiRoot) {
   });
 };
 
-/**
- * createCategory - create a new device category
- *
-  * @param  {http.ClientRequest} req an http request
-  * @param  {http.ServerResponse} res an http rsponse
-  * @param  {requestCallback} next  invoke the next route handler
-  * @return {http.ServerResponse} an http response
- */
-exports.createCategory = function(req, res, next) {
-  //return res.status(200).send({data: {result: true, message: 'ok'}});
-  var message = 'Category Added Successfully',
-    id = null;
-
-  Category.findOne({
-    name: req.body.category_name
-  }, function(err, category) {
-    if (err) {
-      var message  = "Error finding an existing category";
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-    if (category) {
-      var message  = "Category already exist with name: " + category.name;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-
-    var category = new Category({name: req.body.category_name, description: req.body.category_description, code: req.body.category_code});
-    //console.log('Created document id: ' + req.body);
-
-    category.save(function(err) {
-      if (err) {
-        var message  = "Problems while saving category: " + category.name;
-        return res.status(500).json(
-          {
-          "error": 500,
-          "errorMessage": message,
-          "moreInfo": config.urlSupport + "500"
-          });
-      }
-
-      res.set('Location', '/categories/' + category.id);
-      res.status(201).send(category.toJSON());
-    });
-
-  });
-};
-
-/**
- * deleteCategory - delete a category from the system
- *
- * @param  {http.ClientRequest} req an http request
- * @param  {http.ServerResponse} res an http rsponse
- * @return {http.ServerResponse} an http responser
- */
-exports.deleteCategory = function(req, res) {
-  if (!req.params.id) {
-    var message  = "No category to delete with id: " + req.params.id;
-    return res.status(404).json(
-      {
-      "error": 404,
-      "errorMessage": message,
-      "moreInfo": config.urlSupport + "404"
-      });
-
-  }
-  Category.remove({
-    _id: req.params.id
-  }, function(err, device) {
-    if (err) {
-      var message  = "Error deleting a category with id " + req.params.id;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-    res.status(201).send({
-      "message": "Success deleting a category with id " + req.params.id
-    });
-  });
-};
-
-
 
 /**
  * renderCreateConnector - render a view to create a new device category
@@ -538,154 +721,5 @@ exports.renderCreateConnector = function(req, res, restApiRoot) {
     section: 'Add a new connector',
     urlForm: restApiRoot + '/connectors',
     token: config.auth_token
-  });
-};
-
-/**
- * createConnector - create a new device connector
-   * @param  {http.ClientRequest} req an http request
-   * @param  {http.ServerResponse} res an http rsponse
-   * @param  {requestCallback} next  invoke the next route handler
-   * @return {http.ServerResponse} an http response
-  */
-exports.createConnector = function(req, res, next) {
-  var message = 'Connector Added Successfully',
-    id = null;
-
-  Connector.findOne({
-    name: req.body.connector_name
-  }, function(err, connector) {
-    if (err) {
-      var message  = "Problems finding an existing connector: " + req.body.connector_name;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-    if (connector) {
-      var message  = "Connector already exist with name: " + connector.name;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-
-    var connector = new Connector({name: req.body.connector_name, description: req.body.connector_description, url: req.body.connector_url});
-
-    connector.save(function(err) {
-      if (err) {
-        var message  = "Problems while saving connector with name: " + connector.name;
-        return res.status(500).json(
-          {
-          "error": 500,
-          "errorMessage": message,
-          "moreInfo": config.urlSupport + "500"
-          });
-      }
-
-      res.set('Location', '/connector/' + connector.id);
-      res.status(201).send(connector.toJSON());
-    });
-
-  });
-};
-
-/**
- * deleteConnector - delete a category from the system
- *
- * @param  {http.ClientRequest} req an http request
- * @param  {http.ServerResponse} res an http rsponse
- * @return {http.ServerResponse} an http responser
- */
-exports.deleteConnector = function(req, res) {
-  if (!req.params.id) {
-    var message  = "No connector to delete with id: " + req.params.id;
-    return res.status(404).json(
-      {
-      "error": 404,
-      "errorMessage": message,
-      "moreInfo": config.urlSupport + "404"
-      });
-
-  }
-  Connector.remove({
-    _id: req.params.id
-  }, function(err, device) {
-    if (err) {
-      var message  = "Error deleting a connector with id " + req.params.id;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    }
-    res.status(201).send({
-      "message": "Success deleting a connector with id " + req.params.id
-    });
-  });
-};
-
-/**
- * getAllConnectors - retrieve all connectors
-   * @param  {http.ClientRequest} req an http request
-   * @param  {http.ServerResponse} res an http rsponse
-   * @return {http.ServerResponse} an http response
-  */
-exports.getAllConnectors = function(req, res) {
-  // Retrieve and return all notes from the database.
-  Connector.find(function(err, connectors) {
-    if (err) {
-      var message  = "Error finding all connectors";
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-    } else {
-      res.status(201).send(connectors);
-    }
-  });
-};
-
-/**
- * getConnectorByID - get a connectory by ID
- *
- * @param  {http.ClientRequest} req an http request
- * @param  {http.ServerResponse} res an http rsponse
- * @param  {requestCallback} next  invoke the next route handler
- * @return {http.ServerResponse} an http response
- */
-exports.getConnectorByID = function(req, res, next) {
-  var idConnector = (req.params.id).toString();
-
-  Connector.findById(idConnector).populate({path: 'category', model: 'categories'}).exec(function(err, connector) {
-    if (err) {
-      var message  = "Error finding a connector with id: " + idConnector;
-      return res.status(500).json(
-        {
-        "error": 500,
-        "errorMessage": message,
-        "moreInfo": config.urlSupport + "500"
-        });
-
-    }
-
-    if (connector) {
-      return res.status(201).json(connector.toJSON({virtuals: true}));
-    }
-
-    var message  =  "Could not find a connector with id " + req.params.id;
-    return res.status(404).json(
-      {
-      "error": 404,
-      "errorMessage": message,
-      "moreInfo": config.urlSupport + "404"
-      });
   });
 };

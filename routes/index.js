@@ -76,23 +76,20 @@ router.get(restApiRoot + '/createconnector', function(req, res, next) {
 //add a new device
 router.post(restApiRoot + '/devices', authWrap, commonFunction.createDevice);
 
-  // get a device by id
-router.get( restApiRoot + '/devices/:id', authWrap, commonFunction.getDevicebyID);
-
-// get alldevices
-router.get( restApiRoot + '/devices', authWrap, commonFunction.getAllDevices);
-
-// read a device by id
-router.get( restApiRoot + '/devices/read/:id', authWrap, commonFunction.getReadDevicebyID);
-
 // update a device by id
 router.put( restApiRoot + '/devices/:id', authWrap, commonFunction.updateDevice);
 
 // delete a device by id
 router.delete( restApiRoot + '/devices/:id', authWrap, commonFunction.deleteDevice);
 
-// get all device categories
-router.get( restApiRoot + '/categories', authWrap, commonFunction.getAllCategories);
+// get a device by id
+router.get( restApiRoot + '/devices/:id', authWrap, commonFunction.getDevicebyID);
+
+// get all devices
+router.get( restApiRoot + '/devices', authWrap, commonFunction.getAllDevices);
+
+// read a device by id
+router.get( restApiRoot + '/devices/read/:id', authWrap, commonFunction.getReadDevicebyID);
 
 //add a new category
 router.post(restApiRoot + '/categories', authWrap, commonFunction.createCategory);
@@ -100,16 +97,22 @@ router.post(restApiRoot + '/categories', authWrap, commonFunction.createCategory
 //remove a category
 router.delete(restApiRoot + '/categories/:id', authWrap, commonFunction.deleteCategory);
 
-// get all device connectors
-router.get( restApiRoot + '/connectors', authWrap, commonFunction.getAllConnectors);
+//get a category by id
+router.get(restApiRoot + '/categories/:id', authWrap, commonFunction.getCategoryById);
 
-// get a connector
-router.get( restApiRoot + '/connectors/:id', authWrap, commonFunction.getConnectorByID);
+// get all device categories
+router.get( restApiRoot + '/categories', authWrap, commonFunction.getAllCategories);
 
 //add a new connector
 router.post(restApiRoot + '/connectors', authWrap, commonFunction.createConnector);
 
 //remove a connector
 router.delete(restApiRoot + '/connectors/:id', authWrap, commonFunction.deleteConnector);
+
+// get a connector by id
+router.get( restApiRoot + '/connectors/:id', authWrap, commonFunction.getConnectorByID);
+
+// get all device connectors
+router.get( restApiRoot + '/connectors', authWrap, commonFunction.getAllConnectors);
 
 module.exports = router;
