@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "NODE_ENV=test mocha  test/"
   },
   "dependencies": {
     "body-parser": "~1.18.2",
@@ -16,6 +17,10 @@
     "propertiesmanager": "^2.0.3",
     "serve-favicon": "~2.4.5",
     "stylus": "^0.54.5",
+    "supertest": "^3.0.0",
     "tokenmanager": "^3.1.0"
+  },
+  "devDependencies": {
+    "should": "^13.2.1"
   }
 }

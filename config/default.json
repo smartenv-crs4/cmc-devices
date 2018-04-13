@@ -1,4 +1,31 @@
-{
+{  "dev": {
+    "dbHost":"127.0.0.1",
+    "dbPort":"27017",
+    "dbName":"CMCDEVICEDEV",
+    "limit":50,
+    "skip":0,
+    "logfile":"/var/log/CMC-Devices-Microservice.log",
+      "enableCors":true,
+    "authUrl":"http://localhost:3005",
+    "auth_token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJtb2RlIjoibXMiLCJpc3MiOiJub3QgdXNlZCBmbyBtcyIsImVtYWlsIjoibm90IHVzZWQgZm8gbXMiLCJ0eXBlIjoiY21jLWRldmljZXMiLCJlbmFibGVkIjp0cnVlLCJleHAiOjE4MzkyNTAyMjc4OTB9.GDc5qioVj-GGRmKAoWYJJ3R-bGJCnXGfysJKI2-MPoQ",
+    "decodedTokenFieldName": "mailerms",
+    "connectorDomainUrl" : "http://localhost:1880",
+    "urlSupport": "http://localhost:3014/support/",
+    "templates": {
+      "template1": {
+        "subject":"test template",
+        "text":"template di prova {{body}}",
+        "html":"<h1>Template CMC Core</h1><p>{{body}}</p><p style='font:italic 9px;color:lightgrey;'>Esempio footer</p>",
+        "from":"your_from_email_address"
+      }
+    },
+    "testConfig":{
+  "usertokens":["UserType1"],
+  "admintokens":["admin"],
+  "authApptokens":["webui"]
+},
+    "restApiVersion": "0.1"
+  },
   "production": {
     "dbHost":"127.0.0.1",
     "dbPort":"27017",

@@ -19,11 +19,13 @@
  *       along with CMC-Devices.  If not, see <http://www.gnu.org/licenses/>.    *
  * ############################################################################
  */
- 
+
 var config = require('./config/default.json');
 var async=require('async');
 var argv = require('minimist')(process.argv.slice(2));
 var version = require('package.json').version;
+var test = require('./test/testconfig');
+
 console.dir(argv);
 
 var conf;
@@ -34,12 +36,12 @@ switch (process.env['NODE_ENV']) {
         break;
     case 'test':
         conf = config.dev;
+        test.customTestConfig(conf);
         break;
     default:
         conf = config.production;
         break;
 }
-
 
 async.eachOf(conf, function(param, index,callback) {
 
