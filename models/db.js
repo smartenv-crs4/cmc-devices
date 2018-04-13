@@ -48,7 +48,9 @@ exports.connect = function connect(callback) {
     if (err) {
       console.log('Unable to connect to database ' + dbUrl);
       callback(err);
-    } else {}
+    } else {
+        callback();
+    }
   });
 };
 
