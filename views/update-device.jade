@@ -28,10 +28,10 @@ block content
             |Attributes
           label.input-form
               |Latitude
-              input(type="text" name="device_geo_latitude"  value="#{device.attributes.latitude || ''}")
+              input(type="text" name="device_geo_latitude"  value="#{device.loc.coordinates[1] || ''}")
           label.input-form
               |Longitude
-              input(type="text" name="device_geo_longitude" value="#{device.attributes.longitude || ''}")
+              input(type="text" name="device_geo_longitude" value="#{device.loc.coordinates[0] || ''}")
         button(id="add-device" onclick='something()' class="button") Update Device
 block sidebar
   .widget

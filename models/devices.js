@@ -27,16 +27,20 @@ var Category = require('../models/devices').Category;
 
 // create a device schema
 var DeviceSchema = new Schema({
-  id: {type: String, required: [true, 'Why no ID?'], index: { unique: true }}, // [{type: Schema.Types.ObjectId, ref: 'Category'}]
-  category:  [{ type: Schema.Types.ObjectId, ref: 'Category', required: [true, 'Why no category?'] }],
+  id: {$type: String, required: [true, 'Why no ID?'], index: { unique: true }}, // [{type: Schema.Types.ObjectId, ref: 'Category'}]
+  category:  [{ $type: Schema.Types.ObjectId, ref: 'Category', required: [true, 'Why no category?'] }],
   description: String,
-  connector: [{ type: Schema.Types.ObjectId, ref: 'Connector', required: [true, 'Why no connector?'] }],
-  attributes: {
-    latitude: Number,
-    longitude: Number
-  }
-}, {timestamps: true});
-
+  connector: [{ $type: Schema.Types.ObjectId, ref: 'Connector', required: [true, 'Why no connector?'] }],
+  // attributes: {
+  //   latitude: Number,
+  //   longitude: Number
+  // },
+  loc: {
+     type: {$type: String, default: "Point"},
+     coordinates: [Number],
+   }
+}, {timestamps: true,  typeKey: '$type' });
+DeviceSchema.index({'loc': '2dsphere'});
 // create a device model
 var Device = mongoose.model('devices', DeviceSchema);
 module.exports.DeviceSchema = DeviceSchema;

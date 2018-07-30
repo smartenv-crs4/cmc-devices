@@ -19,7 +19,7 @@
  *       along with CMC-Devices.  If not, see <http://www.gnu.org/licenses/>.    *
  * ############################################################################
  */
- var mongoose = require('mongoose');
+var mongoose = require('mongoose');
 var conf = require('../config').conf;
 //var app = require('../app');
 var util = require('util');
@@ -44,13 +44,13 @@ var options = {
 exports.connect = function connect(callback) {
   mongoose.connect(dbUrl, options, function(err, res) {
     console.log('Connected to database: ' + dbUrl);
-
     if (err) {
       console.log('Unable to connect to database ' + dbUrl);
       callback(err);
     } else {
-        callback();
+      callback();
     }
+
   });
 };
 

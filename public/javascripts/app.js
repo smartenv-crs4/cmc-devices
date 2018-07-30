@@ -18,7 +18,8 @@ $(document).ready(function() {
       'Authorization':'Bearer ' + token,
   }, data: terms}).done(function(data) {
       if (data.id) {
-        alert('Device with id: ' + data.id + ' Added Successfully!');
+        var message = ( method == 'POST' ) ? 'Added' : 'Updated';
+        alert('Device with id: ' + data.id + ' ' + message + ' Successfully!');
       } else {
         alert(data.message);
       }

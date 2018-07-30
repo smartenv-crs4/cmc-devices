@@ -26,6 +26,7 @@ var Connector = require('../models/connectors').Connector;
 var domainUrl = process.env.HOST || 'localhost:' + (process.env.PORT || 3014);
 var config = require('propertiesmanager').conf;
 var request = require('request');
+var cache = require('memory-cache');
 
 /**
  * createDevice - create a new device
@@ -65,10 +66,7 @@ exports.createDevice = function(req, res, next) {
       category: req.body.device_category_id,
       description: req.body.device_description,
       connector: req.body.device_connector_id,
-      attributes: {
-        latitude: req.body.device_geo_latitude,
-        longitude: req.body.device_geo_longitude
-      }
+      loc: { type: "Point", coordinates: [ parseFloat(req.body.device_geo_longitude), parseFloat(req.body.device_geo_latitude) ] }
     });
 
     device.save(function(err) {
@@ -113,14 +111,10 @@ exports.createDevice = function(req, res, next) {
         });
     }
 
-    device.endpoint = req.body.device_endpoint;
     device.category = req.body.device_category_id;
     device.description = req.body.device_description;
     device.connector = req.body.device_connector_id;
-    device.attributes = {
-      latitude: req.body.device_geo_latitude,
-      longitude: req.body.device_geo_longitude
-    };
+    device.loc =  { type: "Point", coordinates: [ parseFloat(req.body.device_geo_longitude), parseFloat(req.body.device_geo_latitude) ] };
 
     device.save(function(err, data) {
       if (err) {
@@ -216,7 +210,7 @@ exports.getDevicebyID = function(req, res, next) {
   * @return {http.ServerResponse} an http response
  */
 exports.getAllDevices = function(req, res) {
-  // Retrieve and return all notes from the database.
+  // Retrieve and return all devices from the database.
   Device.find(function(err, devices) {
     if (err) {
       var message = "Error finding all devices";
@@ -255,6 +249,10 @@ exports.getReadDevicebyID = function(req, res, next) {
     }
 
     if (device && device.connector.length) {
+if(cache.get(device.id)){
+  return res.status(201).json(cache.get(device.id));
+}
+
       console.log("Endpoint of device:**** " + domainUrl + device.connector[0].url);
       var endpoint = (device.connector[0].url).toString();
       var endPointToCall = endpoint.replace(/:deviceid/g, idDevice);
@@ -296,6 +294,96 @@ exports.getReadDevicebyID = function(req, res, next) {
     }
   });
 };
+
+
+/**
+ * saveReadDevicebyID - read a realtime device data from the middleware
+ *
+  * @param  {http.ClientRequest} req an http request
+  * @param  {http.ServerResponse} res an http rsponse
+  * @param  {requestCallback} next  invoke the next route handler
+  * @return {http.ServerResponse} an http response
+ */
+exports.saveReadDevicebyID = function(req, res, next) {
+  var idDevice = (req.params.id).toString();
+  var message;
+  Device.findOne({id: idDevice}).exec(function(err, device) {
+    if (err) {
+      message = "Error finding a device with id: " + idDevice;
+      return res.status(500).json({
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+      });
+    }
+
+    if (device) {
+      var deviceData = req.body;
+      message = "Error, no data sended in payload";
+      if (deviceData) {
+        var cachedValue = cache.put(device.id, deviceData);
+        if (cachedValue) {
+          console.log('writed in the cache');
+          console.log(cache.get(device.id));
+          return res.status(201).json(device);
+        }
+        message = "Error writing device data in cmc iot cache";
+      }
+
+      return res.status(500).json({
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+      });
+
+    } else {
+      var message = "Error retrieving device data";
+      return res.status(500).json({
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+      });
+    }
+
+  });
+};
+
+/**
+ * getAllDevicesByGeolocation - Returns all devices closer to one position (lat and long)
+ *
+  * @param  {http.ClientRequest} req an http request
+  * @param  {http.ServerResponse} res an http rsponse
+  * @return {http.ServerResponse} an http response
+ */
+exports.getAllDevicesByGeolocation = function(req, res) {
+  // Retrieve and return all devices closer to one position from the database.
+  var latitude = req.query.lat,
+  longitude = req.query.long,
+  distance = req.query.maxdist || 500;
+  Device.find({ loc: {
+        $nearSphere: {
+           $geometry: {
+              type : "Point",
+              coordinates : [ longitude, latitude ]
+           },
+           $maxDistance: distance
+        }}
+     }, function(err, devices) {
+    if (err) {
+      console.log(err)
+      var message = "Error finding all devices";
+      res.status(500).json(
+        {
+        "error": 500,
+        "errorMessage": message,
+        "moreInfo": config.urlSupport + "500"
+        });
+    } else {
+      res.status(201).send(devices);
+    }
+  });
+};
+
 
 /**
  * createCategory - create a new device category
