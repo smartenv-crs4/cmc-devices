@@ -89,10 +89,10 @@ router.get( restApiRoot + '/devices/:id', authWrap, commonFunction.getDevicebyID
 router.get( restApiRoot + '/devices', authWrap, commonFunction.getAllDevices);
 
 // read a device by id
-router.get( restApiRoot + '/devices/read/:id', authWrap, commonFunction.getReadDevicebyID);
+router.get( restApiRoot + '/devices/:id/read', authWrap, commonFunction.getReadDevicebyID);
 
 // write device data in cmc iot cache (by id)
-router.put( restApiRoot + '/devices/write/:id', authWrap, commonFunction.saveReadDevicebyID);
+router.put( restApiRoot + '/devices/:id/write', authWrap, commonFunction.saveReadDevicebyID);
 
 // get all nearests devices by latitude and longitude
 router.get( restApiRoot + '/devices-geo', authWrap, commonFunction.getAllDevicesByGeolocation);

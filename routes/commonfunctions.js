@@ -306,6 +306,7 @@ if(cache.get(device.id)){
  */
 exports.saveReadDevicebyID = function(req, res, next) {
   var idDevice = (req.params.id).toString();
+  console.log("Saving data for device: " + idDevice);
   var message;
   Device.findOne({id: idDevice}).exec(function(err, device) {
     if (err) {
@@ -323,9 +324,7 @@ exports.saveReadDevicebyID = function(req, res, next) {
       if (deviceData) {
         var cachedValue = cache.put(device.id, deviceData);
         if (cachedValue) {
-          console.log('writed in the cache');
-          console.log(cache.get(device.id));
-          return res.status(201).json(device);
+          return res.status(201).json(cachedValue);
         }
         message = "Error writing device data in cmc iot cache";
       }
@@ -359,8 +358,10 @@ exports.getAllDevicesByGeolocation = function(req, res) {
   // Retrieve and return all devices closer to one position from the database.
   var latitude = req.query.lat,
   longitude = req.query.long,
-  distance = req.query.maxdist || 500;
-  Device.find({ loc: {
+  distance = req.query.maxdist || 500,
+  category = req.query.cat || null;
+  
+  var query = { loc: {
         $nearSphere: {
            $geometry: {
               type : "Point",
@@ -368,7 +369,12 @@ exports.getAllDevicesByGeolocation = function(req, res) {
            },
            $maxDistance: distance
         }}
-     }, function(err, devices) {
+     };
+  
+  if(category){
+      query.category = category;
+  }
+  Device.find(query, function(err, devices) {
     if (err) {
       console.log(err)
       var message = "Error finding all devices";
